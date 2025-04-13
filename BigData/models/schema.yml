@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: marts_fact_rentals
+    description: Matching all rentals with a payment records
+    columns:
+      - name: payment_status
+        description: Categorized payment status of the rental
+        tests:
+          - accepted_values:
+              values: ["Unpaid", "Invalid Payment", "Paid"]

@@ -1,0 +1,13 @@
+BigData:
+  outputs:
+    dev:
+      account: { { env_var('SNOWFLAKE_ACCOUNT') } }
+      database: DW
+      password: { { env_var('SNOWFLAKE_PASSWORD') } }
+      role: { { env_var('SNOWFLAKE_ROLE') } }
+      schema: DVD_RENTAL
+      threads: 1
+      type: snowflake
+      user: { { env_var('SNOWFLAKE_USER') } }
+      warehouse: COMPUTE_WH
+  target: dev
