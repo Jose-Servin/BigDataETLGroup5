@@ -8,3 +8,257 @@ models:
         tests:
           - accepted_values:
               values: ["Unpaid", "Invalid Payment", "Paid"]
+  - name: fact_rentals
+    description: >
+      One row per rental, combining rental info, store/film/customer references,
+      total payment, and rental duration.
+    columns:
+      - name: rental_id
+        description: Primary key for the rental
+        tests:
+          - unique
+          - not_null
+
+      - name: rental_date
+        description: Timestamp of when the rental occurred
+
+      - name: return_date
+        description: Timestamp of when the rental was returned
+
+      - name: rental_month
+        description: Month-level truncation of rental_date for aggregation
+
+      - name: inventory_id
+        description: Foreign key to the inventory item rented
+
+      - name: film_id
+        description: Foreign key to the film
+
+      - name: store_id
+        description: Foreign key to the store
+
+      - name: customer_id
+        description: Foreign key to the customer
+
+      - name: staff_id
+        description: Staff member who handled the rental
+
+      - name: total_payment_amount
+        description: Total amount paid for the rental
+
+      - name: rental_duration_days
+        description: Duration in days between rental and return
+
+  - name: fact_payments
+    description: >
+      One row per payment made by a customer, joined with store and film info via rental.
+    columns:
+      - name: payment_id
+        description: Primary key for the payment
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: Foreign key to the customer who made the payment
+
+      - name: staff_id
+        description: Staff member who processed the payment
+
+      - name: rental_id
+        description: Foreign key to the rental associated with the payment
+
+      - name: inventory_id
+        description: Foreign key to inventory item, from rental
+
+      - name: film_id
+        description: Foreign key to film, from rental
+
+      - name: store_id
+        description: Foreign key to store, from rental
+
+      - name: amount
+        description: Amount paid
+
+      - name: payment_date
+        description: Timestamp of the payment
+
+      - name: payment_month
+        description: Month-level truncation of payment_date
+
+  - name: dim_customer
+    description: >
+      Customer dimension with name, contact info, and geographic location.
+    columns:
+      - name: customer_id
+        description: Primary key for the customer
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_full_name
+        description: Concatenated full name of the customer
+
+      - name: email
+        description: Email address of the customer
+
+      - name: address
+        description: Customer’s address
+
+      - name: city
+        description: City of the customer's address
+
+      - name: country
+        description: Country of the customer's address
+
+      - name: active
+        description: Whether the customer is active
+
+      - name: create_date
+        description: Date the customer record was created
+
+  - name: dim_film
+    description: >
+      Film dimension with title, genre, language, and rating info.
+    columns:
+      - name: film_id
+        description: Primary key for the film
+        tests:
+          - unique
+          - not_null
+
+      - name: title
+        description: Title of the film
+
+      - name: description
+        description: Description or synopsis of the film
+
+      - name: release_year
+        description: Year the film was released
+
+      - name: language
+        description: Language of the film
+
+      - name: length
+        description: Runtime of the film in minutes
+
+      - name: rating
+        description: Film rating (e.g., PG, R)
+
+      - name: category
+        description: Genre/category of the film
+
+  - name: dim_store
+    description: >
+      Store dimension with location and manager information.
+    columns:
+      - name: store_id
+        description: Primary key for the store
+        tests:
+          - unique
+          - not_null
+
+      - name: address
+        description: Store’s street address
+
+      - name: city
+        description: City where the store is located
+
+      - name: country
+        description: Country where the store is located
+
+      - name: manager_staff_id
+        description: Staff ID of the store manager
+
+      - name: manager_name
+        description: Full name of the store manager
+
+  - name: obt_rental_summary
+    description: >
+      OBT combining rental, payment, customer, film, and store information.
+    columns:
+      - name: rental_id
+        description: Unique identifier for each rental
+        tests:
+          - unique
+          - not_null
+
+      - name: rental_date
+        description: Timestamp of when the rental was made
+
+      - name: return_date
+        description: Timestamp of when the rental was returned
+
+      - name: rental_month
+        description: Month the rental occurred, truncated to 'YYYY-MM'
+        tests:
+          - not_null
+
+      - name: rental_duration_days
+        description: Duration in days between rental and return
+
+      - name: total_payment_amount
+        description: Total amount paid for the rental
+
+      - name: latest_payment_date
+        description: Date of the most recent payment related to this rental
+
+      - name: customer_id
+        description: Unique identifier for the customer who made the rental
+        tests:
+          - not_null
+
+      - name: customer_full_name
+        description: Full name of the customer
+
+      - name: customer_email
+        description: Email address of the customer
+
+      - name: customer_city
+        description: Customer's city of residence
+
+      - name: customer_country
+        description: Customer's country of residence
+
+      - name: customer_active
+        description: Whether the customer is active in the system (boolean)
+
+      - name: film_id
+        description: Unique identifier for the rented film
+        tests:
+          - not_null
+
+      - name: film_title
+        description: Title of the rented film
+
+      - name: film_category
+        description: Genre/category of the rented film
+
+      - name: film_rating
+        description: Rating of the rented film (e.g., PG, R)
+
+      - name: film_length
+        description: Length of the film in minutes
+
+      - name: film_language
+        description: Language the film is available in
+
+      - name: store_id
+        description: Unique identifier for the store where the rental occurred
+        tests:
+          - not_null
+
+      - name: store_address
+        description: Address of the store where the rental occurred
+
+      - name: store_city
+        description: City where the store is located
+
+      - name: store_country
+        description: Country where the store is located
+
+      - name: store_manager_name
+        description: Full name of the store manager
+
+      - name: staff_id
+        description: Identifier for the staff member who handled the rental
